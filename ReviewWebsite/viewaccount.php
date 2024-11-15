@@ -40,19 +40,21 @@ $stmt->close();
 $sql_reviews = "SELECT r.review_id, r.review_text, r.rating, r.review_date, e.title AS entertainment_title 
                 FROM Reviews r 
                 JOIN Entertainments e ON r.entertainment_id = e.entertainment_id 
-                WHERE r.user_id = ?";
+                WHERE r.user_id = ? 
+                ORDER BY r.review_date DESC";
 $stmt = $conn->prepare($sql_reviews);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $reviews = $stmt->get_result();
 $stmt->close();
 
-$sql_comments = "SELECT c.*, r.review_text, u.username AS review_author, e.title AS entertainment_title 
-                 FROM Comments c 
-                 JOIN Reviews r ON c.review_id = r.review_id 
-                 JOIN Users u ON r.user_id = u.user_id 
-                 JOIN Entertainments e ON r.entertainment_id = e.entertainment_id 
-                 WHERE c.user_id = ?";
+$sql_comments = "SELECT c.*, r.review_id, u.username AS review_author, e.title AS entertainment_title 
+                 FROM comments c 
+                 JOIN reviews r ON c.review_id = r.review_id 
+                 JOIN users u ON r.user_id = u.user_id 
+                 JOIN entertainments e ON r.entertainment_id = e.entertainment_id 
+                 WHERE c.user_id = ?
+                 ORDER BY r.review_date ASC";
 $stmt = $conn->prepare($sql_comments);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -145,10 +147,13 @@ $conn->close();
             <h2>Your Reviews</h2>
             <?php while ($review = $reviews->fetch_assoc()): ?>
                 <div class="article-card">
-                    <h3><?php echo htmlspecialchars($review['review_text']); ?></h3>
-                    <p>Entertainment: <?php echo htmlspecialchars($review['entertainment_title']); ?></p>
-                    <p>Rating: <?php echo htmlspecialchars($review['rating']); ?></p>
-                    <p>Date: <?php echo htmlspecialchars($review['review_date']); ?></p>
+                <h3>
+                    <a href="review.php?review_id=<?php echo htmlspecialchars($review['review_id']); ?>">
+                        <?php echo htmlspecialchars($review['entertainment_title']); ?>
+                    </a>
+                </h3>
+                <p>Rating: <?php echo htmlspecialchars($review['rating']); ?></p>
+                <p>Date: <?php echo htmlspecialchars($review['review_date']); ?></p>
                 </div>
             <?php endwhile; ?>
         </div>
@@ -158,9 +163,13 @@ $conn->close();
             <h2>Your Comments</h2>
             <?php while ($comment = $comments->fetch_assoc()): ?>
                 <div class="article-card">
-                    <h3><?php echo htmlspecialchars($comment['comment_text']); ?></h3>
-                    <p>On Review: "<?php echo htmlspecialchars($comment['review_text']); ?>" by <?php echo htmlspecialchars($comment['review_author']); ?></p>
-                    <p>Entertainment: <?php echo htmlspecialchars($comment['entertainment_title']); ?></p>
+                    <h3>
+                        <a href="review.php?review_id=<?php echo htmlspecialchars($comment['review_id']); ?>">
+                            <?php echo htmlspecialchars($comment['entertainment_title']); ?> Review by <?php echo htmlspecialchars($comment['review_author']); ?>
+                        </a>
+                        
+                    </h3>
+                    <p><?php echo htmlspecialchars($comment['comment_text']); ?></p>
                     <p>Date: <?php echo htmlspecialchars($comment['comment_date']); ?></p>
                 </div>
             <?php endwhile; ?>

@@ -10,9 +10,16 @@ if (session_status() == PHP_SESSION_NONE) {
         <a href='index.php'> <img src="logo.png" alt="Logo"> </a>
     </div>
     <div class="nav-links">
-        <a href="#" class="nav-link left">Create Review</a>
-        <a href="#" class="nav-link middle">View All Reviews</a>
+        <a href="createreview.php" class="nav-link left">Create Review</a>
+        <a href="allreviews.php" class="nav-link middle">View All Reviews</a>
         <a href="viewaccount.php" class="nav-link right">Account</a>
+        
+        <?php
+        // Add 'Add Entertainment' link if the user role is 1 (owner) or 2 (admin)
+        if (isset($_SESSION['user_role_id']) && ($_SESSION['user_role_id'] == 1 || $_SESSION['user_role_id'] == 2)) {
+            echo '<a href="addentertainment.php" class="nav-link">Add Entertainment</a>';
+        }
+        ?>
     </div>
     <div class="nav-login">
         <?php if (isset($_SESSION['username'])): ?>
@@ -25,6 +32,12 @@ if (session_status() == PHP_SESSION_NONE) {
 </nav>
 
 <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
     .navbar {
         display: flex;
         justify-content: space-between;
@@ -58,4 +71,5 @@ if (session_status() == PHP_SESSION_NONE) {
         margin-right: 1rem;
     }
 </style>
+
 

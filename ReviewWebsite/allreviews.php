@@ -15,7 +15,7 @@ include 'connection.php';
     <main class="articles">
     <?php
         // Prepared statement to get reviews with entertainment name and author username
-        $stmt = $conn->prepare("SELECT entertainments.title, users.username, reviews.review_id FROM reviews JOIN entertainments ON reviews.entertainment_id = entertainments.entertainment_id JOIN users ON reviews.user_id = users.user_id ORDER BY reviews.review_date DESC LIMIT 3");
+        $stmt = $conn->prepare("SELECT entertainments.title, users.username, reviews.review_id FROM reviews JOIN entertainments ON reviews.entertainment_id = entertainments.entertainment_id JOIN users ON reviews.user_id = users.user_id ORDER BY reviews.review_date DESC");
         $stmt->execute();
         $stmt->bind_result($entertainmentTitle, $username, $reviewId);
 
