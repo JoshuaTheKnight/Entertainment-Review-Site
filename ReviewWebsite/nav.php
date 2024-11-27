@@ -7,7 +7,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 <nav class="navbar">
     <div class="nav-logo">
-        <a href='index.php'> <img src="logo.png" alt="Logo"> </a>
+        <a href='index.php'> <img src="Images/logo.webp" alt="Logo"> </a>
     </div>
     <div class="nav-links">
         <a href="createreview.php" class="nav-link left">Create Review</a>

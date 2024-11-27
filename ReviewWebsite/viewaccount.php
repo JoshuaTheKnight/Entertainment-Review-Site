@@ -48,13 +48,13 @@ $stmt->execute();
 $reviews = $stmt->get_result();
 $stmt->close();
 
-$sql_comments = "SELECT c.*, r.review_id, u.username AS review_author, e.title AS entertainment_title 
-                 FROM comments c 
-                 JOIN reviews r ON c.review_id = r.review_id 
-                 JOIN users u ON r.user_id = u.user_id 
-                 JOIN entertainments e ON r.entertainment_id = e.entertainment_id 
+$sql_comments = "SELECT c.comment_id, c.comment_text, c.comment_date, r.review_id, u.username AS review_author, e.title AS entertainment_title 
+                 FROM Comments c 
+                 JOIN Reviews r ON c.review_id = r.review_id 
+                 JOIN Users u ON r.user_id = u.user_id 
+                 JOIN Entertainments e ON r.entertainment_id = e.entertainment_id 
                  WHERE c.user_id = ?
-                 ORDER BY r.review_date ASC";
+                 ORDER BY c.comment_date DESC";
 $stmt = $conn->prepare($sql_comments);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -127,8 +127,18 @@ $conn->close();
             text-decoration: none;
         }
 
-        .articles h2 {
-            margin-bottom: 1rem;
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .delete-button:hover {
+            background-color: #d32f2f;
         }
     </style>
 </head>
@@ -139,6 +149,9 @@ $conn->close();
         <div class="account-stats">
             Total Reviews: <?php echo htmlspecialchars($total_reviews); ?> | Total Comments: <?php echo htmlspecialchars($total_comments); ?>
         </div>
+        <div class="edit-account">
+            <a href="editaccount.php" class="edit-account-link">Edit Account</a>
+        </div>
     </div>
 
     <div class="content">
@@ -147,13 +160,18 @@ $conn->close();
             <h2>Your Reviews</h2>
             <?php while ($review = $reviews->fetch_assoc()): ?>
                 <div class="article-card">
-                <h3>
-                    <a href="review.php?review_id=<?php echo htmlspecialchars($review['review_id']); ?>">
-                        <?php echo htmlspecialchars($review['entertainment_title']); ?>
-                    </a>
-                </h3>
-                <p>Rating: <?php echo htmlspecialchars($review['rating']); ?></p>
-                <p>Date: <?php echo htmlspecialchars($review['review_date']); ?></p>
+                    <h3>
+                        <a href="review.php?review_id=<?php echo htmlspecialchars($review['review_id']); ?>">
+                            <?php echo htmlspecialchars($review['entertainment_title']); ?>
+                        </a>
+                    </h3>
+                    <p>Rating: <?php echo htmlspecialchars($review['rating']); ?></p>
+                    <p>Date: <?php echo htmlspecialchars($review['review_date']); ?></p>
+                    <form action="deleteactivity.php" method="GET">
+                        <input type="hidden" name="type" value="review">
+                        <input type="hidden" name="id" value="<?php echo htmlspecialchars($review['review_id']); ?>">
+                        <button type="submit" class="delete-button">Delete Review</button>
+                    </form>
                 </div>
             <?php endwhile; ?>
         </div>
@@ -167,16 +185,18 @@ $conn->close();
                         <a href="review.php?review_id=<?php echo htmlspecialchars($comment['review_id']); ?>">
                             <?php echo htmlspecialchars($comment['entertainment_title']); ?> Review by <?php echo htmlspecialchars($comment['review_author']); ?>
                         </a>
-                        
                     </h3>
                     <p><?php echo htmlspecialchars($comment['comment_text']); ?></p>
                     <p>Date: <?php echo htmlspecialchars($comment['comment_date']); ?></p>
+                    <form action="deleteactivity.php" method="GET">
+                        <input type="hidden" name="type" value="comment">
+                        <input type="hidden" name="id" value="<?php echo htmlspecialchars($comment['comment_id']); ?>">
+                        <button type="submit" class="delete-button">Delete Comment</button>
+                    </form>
                 </div>
             <?php endwhile; ?>
         </div>
     </div>
 </body>
 </html>
-
-
 

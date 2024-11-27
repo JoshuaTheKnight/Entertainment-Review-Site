@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['login_form'])) {
         $username = trim($_POST['username']);
         $password = trim($_POST['password']);
-        echo $password;
         
         if (empty($username) || empty($password)) {
             $error_login = "Please enter both username and password.";
@@ -25,8 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
             if ($result->num_rows > 0) {
                 $user = $result->fetch_assoc();
-                echo "Stored Hashed Password: " . $user['user_password']; // Debug statement
-    
                 // Check password using correct column name for hashed password
                 if (password_verify($password, $user['user_password'])) {
                     $_SESSION['user_id'] = $user['user_id'];
